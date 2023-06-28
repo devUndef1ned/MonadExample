@@ -1,13 +1,16 @@
 package org.devundef1ned
 
-data class Log1<T>(val logs: List<String>, val value: T)
+data class Log1<T>(val value: T, val logs: List<String>)
 
 fun <T, R> toLogger1(
     value: T,
     function: (T) -> R,
     log: String
 ): Log1<R> {
-    return Log1(logs = listOf(log), value = function(value))
+    return Log1(
+        value = function(value),
+        logs = listOf(log),
+    )
 }
 
 fun _addOne(value: Int): Log1<Int> {
@@ -34,15 +37,15 @@ fun _minusTwo(value: Int): Log1<Int> {
     )
 }
 
-fun <T> T.just(): Log1<T> = Log1(value = this, logs = emptyList())
-
 fun <T, R> Log1<T>.flatMap(function: (T) -> Log1<R>): Log1<R> {
     val newLog = function(this.value)
     return Log1(
+        value = newLog.value,
         logs = this.logs + newLog.logs,
-        value = newLog.value
     )
 }
+
+fun <T> T.just(): Log1<T> = Log1(value = this, logs = emptyList())
 
 fun runLogger1(initialValue: Int) {
     val result = initialValue.just()
