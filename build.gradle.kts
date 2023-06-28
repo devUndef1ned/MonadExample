@@ -11,6 +11,7 @@ repositories {
 }
 
 dependencies {
+    implementation("io.arrow-kt:arrow-core:1.2.0-RC")
     testImplementation(kotlin("test"))
 }
 
