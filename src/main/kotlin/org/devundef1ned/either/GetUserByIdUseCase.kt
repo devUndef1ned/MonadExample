@@ -1,14 +1,12 @@
 package org.devundef1ned.either
 
-import arrow.core.Either
-import org.devundef1ned.either.model.NetworkError
+import org.devundef1ned.either.model.ConnectionException
+import org.devundef1ned.either.model.NoUserFoundException
+import org.devundef1ned.either.model.RequestException
 import org.devundef1ned.either.model.User
 
 class GetUserByIdUseCase {
-    operator fun invoke(id: Int): Either<UserFetchError, User> = TODO()
-}
 
-sealed interface UserFetchError {
-    data class Error(val networkError: NetworkError) : UserFetchError
-    object NoUserFound : UserFetchError
+    @Throws(ConnectionException::class, RequestException::class, NoUserFoundException::class)
+    operator fun invoke(id: Int): User = TODO()
 }
