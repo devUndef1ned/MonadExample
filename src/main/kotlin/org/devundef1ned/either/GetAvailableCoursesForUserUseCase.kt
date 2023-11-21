@@ -14,19 +14,23 @@ class GetAvailableCoursesForUserUseCase(
      * Check if there is a subscription for software development courses ->
      * Fetch all software development courses
      */
-    @Throws(
-        ConnectionException::class,
-        RequestException::class,
-        NoUserFoundException::class
-    )
-    fun invoke(userId: Int): List<Course> {
-        val user = getUserByIdUseCase(userId)
-        val subscriptions = getSubscriptionsForUserUseCase(user)
+    fun invoke(userId: Int): Result<List<Course>> {
+        val userResult = getUserByIdUseCase(userId)
 
-        if (!subscriptions.any { it.type == "SOFTWARE_DEVELOPMENT_COURSES" }) {
-            throw NoSoftwareCoursesSubscriptionException()
+        if (userResult.isFailure) {
+            return Result.failure(userResult.exceptionOrNull()!!)
         }
 
-        return getAllSoftwareCoursesUseCase()
+        val subscriptionsResult = getSubscriptionsForUserUseCase(userResult.getOrThrow())
+
+        if (subscriptionsResult.isFailure) {
+            return Result.failure(subscriptionsResult.exceptionOrNull()!!)
+        }
+
+        if (!subscriptionsResult.getOrDefault(emptyList()).any { it.type == "SOFTWARE_DEVELOPMENT_COURSES" }) {
+            return Result.failure(NoSoftwareCoursesSubscriptionException())
+        }
+
+        return Result.success(getAllSoftwareCoursesUseCase())
     }
 }
